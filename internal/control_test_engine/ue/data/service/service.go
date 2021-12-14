@@ -22,6 +22,7 @@ func InitDataPlane(ue *context.UEContext, message []byte) {
 	newInterface := &netlink.Iptun{
 		LinkAttrs: netlink.LinkAttrs{
 			Name: nameInf,
+			MTU:  1400,
 		},
 		Local:  ueGnbIp,
 		Remote: gatewayIp,
