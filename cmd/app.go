@@ -71,14 +71,20 @@ func main() {
 				Name:    "load-test",
 				Aliases: []string{"load-test"},
 				Usage: "\nLoad endurance stress tests.\n" +
-					"Example for testing multiple UEs: load-test -n 5 \n",
+					"Example for testing multiple UEs: load-test -n 5 -sst 1 -sd 010203\n",
 				Flags: []cli.Flag{
 					&cli.IntFlag{Name: "number-of-ues", Value: 1, Aliases: []string{"n"}},
+					&cli.IntFlag{Name: "service-type", Value: 1, Aliases: []string{"sst"}},
+					&cli.StringFlag{Name: "slice-differentiator", Value: "1", Aliases: []string{"sd"}},
 				},
 				Action: func(c *cli.Context) error {
 					var numUes int
 					name := "Testing registration of multiple UEs"
-					cfg := config.Data
+
+					cfg, err := config.GetConfig()
+					if err != nil {
+						log.Fatal("Error in get configuration")
+					}
 
 					if c.IsSet("number-of-ues") {
 						numUes = c.Int("number-of-ues")
@@ -87,14 +93,34 @@ func main() {
 						return nil
 					}
 
+					// set service-type slice configuration
+					if c.IsSet("service-type") {
+						cfg.GNodeB.SliceSupportList.Sst = c.String("service-type")
+						cfg.Ue.Snssai.Sst = c.Int("service-type")
+					} else {
+						log.Info(c.Command.Usage)
+						return nil
+					}
+
+					// set slice-differentiator slice configuration
+					if c.IsSet("slice-differentiator") {
+						cfg.GNodeB.SliceSupportList.Sd = c.String("slice-differentiator")
+						cfg.Ue.Snssai.Sd = c.String("slice-differentiator")
+					} else {
+						log.Info(c.Command.Usage)
+						return nil
+					}
+
 					log.Info("---------------------------------------")
 					log.Info("[TESTER] Starting test function: ", name)
 					log.Info("[TESTER][UE] Number of UEs: ", numUes)
+					log.Info("[TESTER][UE] Slice selected -- SST: ", cfg.Ue.Snssai.Sst)
+					log.Info("[TESTER][UE] Slice selected -- SD: ", cfg.Ue.Snssai.Sd)
 					log.Info("[TESTER][GNB] gNodeB control interface IP/Port: ", cfg.GNodeB.ControlIF.Ip, "/", cfg.GNodeB.ControlIF.Port)
 					log.Info("[TESTER][GNB] gNodeB data interface IP/Port: ", cfg.GNodeB.DataIF.Ip, "/", cfg.GNodeB.DataIF.Port)
 					log.Info("[TESTER][AMF] AMF IP/Port: ", cfg.AMF.Ip, "/", cfg.AMF.Port)
 					log.Info("---------------------------------------")
-					templates.TestMultiUesInQueue(numUes)
+					templates.TestMultiUesInQueue(numUes, cfg)
 
 					return nil
 				},

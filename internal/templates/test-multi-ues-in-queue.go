@@ -10,15 +10,15 @@ import (
 	"time"
 )
 
-func TestMultiUesInQueue(numUes int) {
+func TestMultiUesInQueue(numUes int, cfg config.Config) {
 
 	wg := sync.WaitGroup{}
 
-	cfg, err := config.GetConfig()
-	if err != nil {
-		//return nil
-		log.Fatal("Error in get configuration")
-	}
+	// cfg, err := config.GetConfig()
+	//if err != nil {
+	//return nil
+	//log.Fatal("Error in get configuration")
+	//}
 
 	go gnb.InitGnb(cfg, &wg)
 

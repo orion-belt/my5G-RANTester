@@ -11,7 +11,7 @@ gnodeb:
     tac: "000001"
     gnbid: "000001"
   slicesupportlist:
-    sst: "01"
+    sst: "1"
     sd: "010203"
 
 ue:
@@ -25,7 +25,7 @@ ue:
     mcc: "208"
     mnc: "93"
   snssai:
-    sst: 01
+    sst: 1
     sd: "010203"
 
 amfif:
